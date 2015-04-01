@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# ... <script code>
+# ...
+
+echo "$0"
+
+chmod u+x $PINSPOT_ACTION_FILE
+$PINSPOT_ACTION_FILE

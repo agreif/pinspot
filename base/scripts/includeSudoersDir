@@ -1,0 +1,31 @@
+#!/bin/sh
+
+echo "$0"
+
+if test "$PINSPOT_OS_NAME" = "OpenBSD"; then
+    echo "check..."
+    if test -d /etc/sudoers.d; then
+	echo "already exists: /etc/sudoers.d"
+    else
+	mkdir /etc/sudoers.d
+    fi
+
+    grep -q '^#includedir /etc/sudoers.d$' /etc/sudoers
+    if test $? -eq 0; then
+	echo "already done"
+	exit 0
+    fi
+
+    echo "exec..."
+    cp /etc/sudoers /etc/sudoers_tmp
+    chmod +w /etc/sudoers_tmp
+    echo '#includedir /etc/sudoers.d' >> /etc/sudoers_tmp
+    visudo -c -f /etc/sudoers_tmp
+    if test $? -ne 0; then
+	echo "invalid sudoers: /etc/sudoers_tmp"
+	exit 1
+    fi
+    chmod 440 /etc/sudoers_tmp
+    chown root:wheel /etc/sudoers_tmp
+    mv /etc/sudoers_tmp /etc/sudoers
+fi

@@ -1,0 +1,40 @@
+#!/bin/sh
+
+# path: ...
+# owner: ...
+# group: ...
+# mode: ...
+
+echo "$0"
+
+DIR_PATH=`grep '^path:' $PINSPOT_ACTION_FILE | sed 's/^[^:]*:\(.*\)/\1/' | sed 's/^ //'`
+if test -z "$DIR_PATH"; then
+    echo "error: path missing"
+    exit 1
+fi
+
+OWNER=`grep '^owner:' $PINSPOT_ACTION_FILE | sed 's/^[^:]*:\(.*\)/\1/' | sed 's/^ //'`
+GROUP=`grep '^group:' $PINSPOT_ACTION_FILE | sed 's/^[^:]*:\(.*\)/\1/' | sed 's/^ //'`
+MODE=`grep '^mode:' $PINSPOT_ACTION_FILE | sed 's/^[^:]*:\(.*\)/\1/' | sed 's/^ //'`
+
+echo "check..."
+if test -d "$DIR_PATH"; then
+    echo "already done"
+    # dont exit here because we want to set owner/group/mode later
+fi
+
+if test ! -d "$DIR_PATH"; then
+    echo "exec..."
+    mkdir -p "$DIR_PATH"
+    if test $? -ne 0; then
+	echo "error"
+	exit 1
+    fi
+fi
+
+if test -n "$OWNER"; then chown $OWNER "$DIR_PATH"; fi
+if test -n "$GROUP"; then chgrp $GROUP "$DIR_PATH"; fi
+if test -n "$MODE"; then chmod $MODE "$DIR_PATH"; fi
+
+echo "result..."
+ls -lad "$DIR_PATH"

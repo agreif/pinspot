@@ -1,0 +1,39 @@
+#!/bin/sh
+
+# repository: ...
+# packages: ...
+# ...
+
+echo "$0"
+
+PACKAGES=`grep '^packages:' $PINSPOT_ACTION_FILE | sed 's/^[^:]*:\(.*\)/\1/' | sed 's/^ //'`
+PACKAGES="$PACKAGES `sed -e '1,/^packages:/d' $PINSPOT_ACTION_FILE | xargs`"
+if test -z "`echo $PACKAGES | sed 's/ //g'`"; then
+    echo "error: packages missing"
+    exit 1
+fi
+
+PACKAGES=`echo $PACKAGES | sed -e 's/,/ /g' -e 's/;/ /g'`
+
+if test "$PINSPOT_OS_NAME" = "OpenBSD"; then
+    REPOSITORY=`grep '^repository:' $PINSPOT_ACTION_FILE | sed 's/^[^:]*:\(.*\)/\1/' | sed 's/^ //'`
+    if test -z "$REPOSITORY"; then
+	echo "error: repository missing"
+	exit 1
+    fi
+    for pkgname in $PACKAGES; do
+	echo "check $pkgname ..."
+	pkgname=`PKG_PATH=$REPOSITORY pkg_info -S "$pkgname" | grep 'Signature:' | sed 's/^Signature: \([^,]*\),.*$/\1/'`
+	if test -z "$pkgname"; then exit 1; fi
+	echo "check $pkgname ..."
+	pkg_info -m | grep "^$pkgname"
+	if test $? -eq 0; then
+	    echo "already installed: $pkgname"
+	else
+	    echo "install $pkgname"
+	    PKG_PATH=$REPOSITORY pkg_add -I $pkgname
+	    if test $? -ne 0; then exit 1; fi
+	fi
+    done
+fi
+

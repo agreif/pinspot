@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# user: ...
+
+echo "$0"
+
+USER=`grep '^user:' $PINSPOT_ACTION_FILE | sed 's/^[^:]*:\(.*\)/\1/' | sed 's/^ //'`
+
+echo "check..."
+if test -d ~$USER/.ssh; then
+    exit 0
+fi
+echo "exec..."
+ssh-keygen -t rsa -N "" -f ~$USER/.ssh/id_rsa
+
+echo "result..."
+ls -la ~$USER/.ssh

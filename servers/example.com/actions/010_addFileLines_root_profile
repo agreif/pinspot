@@ -1,0 +1,4 @@
+file: /root/.profile
+lines:
+# local changes
+. /root/.kshrc

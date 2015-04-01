@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# user: ...
+# key: ...
+
+echo "$0"
+
+USER=`grep '^user:' $PINSPOT_ACTION_FILE | sed 's/^[^:]*:\(.*\)/\1/' | sed 's/^ //'`
+if test -z "$USER"; then
+    echo "error: user missing"
+    exit 1
+fi
+KEY="`grep '^key:' $PINSPOT_ACTION_FILE | sed 's/^[^:]*:\(.*\)/\1/' | sed 's/^ //'`"
+
+if test "$PINSPOT_OS_NAME" = "OpenBSD"; then
+    echo "check..."
+    USER_HOME=`getent passwd | grep $USER | awk -F: '{print $6}'`
+    grep -q "$KEY" $USER_HOME/.ssh/authorized_keys
+    if test $? -eq 0; then
+	echo "already done"
+	exit 0
+    fi
+
+    echo "exec..."
+    echo "$KEY" >> $USER_HOME/.ssh/authorized_keys
+    if test $? -ne 0; then exit 1; fi
+
+    echo "result..."
+    grep "$KEY" $USER_HOME/.ssh/authorized_keys
+fi

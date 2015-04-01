@@ -1,0 +1,65 @@
+#!/bin/sh
+
+# src: ...
+# dest: ...
+# owner: ...
+# group: ...
+# mode: ...
+# --- optional without src ---
+# content:
+# ...
+
+echo "$0"
+
+SRC_FILE_NAME=`grep '^src:' $PINSPOT_ACTION_FILE | sed 's/^[^:]*:\(.*\)/\1/' | sed 's/^ //'`
+
+HAS_CONTENT=0
+grep '^content:' $PINSPOT_ACTION_FILE
+if test $? -eq 0; then
+    HAS_CONTENT=1
+fi
+
+if test -z "$SRC_FILE_NAME" -a $HAS_CONTENT -eq 0; then
+    echo "error: source filename or content missing"
+    exit 1
+fi
+
+SRC_FILE=$PINSPOT_FILES_DIR/$SRC_FILE_NAME
+DEST_FILE="`grep '^dest:' $PINSPOT_ACTION_FILE | sed 's/^[^:]*:\(.*\)/\1/' | sed 's/^ //'`"
+if test -z "$DEST_FILE"; then
+    echo "error: dest file path missing"
+    exit 1
+fi
+OWNER=`grep '^owner:' $PINSPOT_ACTION_FILE | sed 's/^[^:]*:\(.*\)/\1/' | sed 's/^ //'`
+GROUP=`grep '^group:' $PINSPOT_ACTION_FILE | sed 's/^[^:]*:\(.*\)/\1/' | sed 's/^ //'`
+MODE=`grep '^mode:' $PINSPOT_ACTION_FILE | sed 's/^[^:]*:\(.*\)/\1/' | sed 's/^ //'`
+
+echo "exec..."
+DIR=`dirname $DEST_FILE`
+if test ! -d $DIR; then
+    mkdir -p $DIR
+    if test $? -ne 0; then
+	echo "error"
+	exit 1
+    fi
+fi
+
+if test $HAS_CONTENT -eq 1; then
+    sed '1,/^content: *$/d' $PINSPOT_ACTION_FILE > "$DEST_FILE"
+    if test $? -ne 0; then
+	echo "error"
+	exit 1
+    fi
+else
+    cp "$SRC_FILE" "$DEST_FILE"
+    if test $? -ne 0; then
+	echo "error"
+	exit 1
+    fi
+fi
+if test -n "$OWNER"; then chown $OWNER "$DEST_FILE"; fi
+if test -n "$GROUP"; then chgrp $GROUP "$DEST_FILE"; fi
+if test -n "$MODE"; then chmod $MODE "$DEST_FILE"; fi
+
+echo "result..."
+ls -la "$DEST_FILE"

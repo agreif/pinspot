@@ -1,0 +1,68 @@
+#!/bin/sh
+
+# file: ...
+# line: ...
+# --- optional instead of line
+# lines:
+# ...
+
+echo "$0"
+
+FILE=`grep '^file:' $PINSPOT_ACTION_FILE | sed 's/^[^:]*:\(.*\)/\1/' | sed 's/^ //'`
+if test -z "$FILE"; then
+    echo "error: file missing"
+    exit 1
+fi
+LINE=`grep '^line:' $PINSPOT_ACTION_FILE | sed 's/^[^:]*:\(.*\)/\1/' | sed 's/^ //'`
+
+HAS_LINES=0
+grep '^lines:' $PINSPOT_ACTION_FILE
+if test $? -eq 0; then
+    HAS_LINES=1
+fi
+
+if test -z "$LINE" -a $HAS_LINES -eq 0; then
+    echo "error: line  or lines missing"
+    exit 1
+fi
+
+if test "$PINSPOT_OS_NAME" = "OpenBSD"; then
+    if test $HAS_LINES -eq 0; then
+	echo "check..."
+	grep -q "^$LINE\$" $FILE
+	result=$?
+	if test $result -eq 0; then
+	    echo "already done"
+	    exit 0
+	elif test $result -ne 1; then
+	    echo "error"
+	    exit 1
+	fi
+
+	echo "exec..."
+	echo "$LINE" >> $FILE
+	if test $? -ne 0; then exit 1; fi
+
+	echo "result..."
+	grep "$LINE" $FILE
+    else
+	sed -e '1,/^lines: *$/d' -e '/^$/d' $PINSPOT_ACTION_FILE | while read LINE; do
+	    echo "check..."
+	    grep -q "^$LINE\$" $FILE
+	    result=$?
+	    if test $result -eq 0; then
+		echo "already done"
+	    elif test $result -ne 1; then
+		echo "error"
+		exit 1
+	    else
+		echo "exec..."
+		echo "$LINE" >> $FILE
+		if test $? -ne 0; then exit 1; fi
+
+		echo "result..."
+		grep "$LINE" $FILE
+	    fi
+	done
+    fi
+fi

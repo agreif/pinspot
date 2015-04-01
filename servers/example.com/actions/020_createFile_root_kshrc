@@ -1,0 +1,30 @@
+dest: /root/.kshrc
+owner: root
+group: wheel
+mode: 444
+content:
+
+export HISTFILE=$HOME/.ksh_history
+export HISTSIZE=1000
+typeset -r HISTFILE
+typeset -r HISTSIZE
+
+export PKG_PATH=ftp://ftp.spline.de/pub/OpenBSD/snapshots/packages/`machine -a`/
+
+export CVSROOT=anoncvs@ftp.hostserver.de:/cvs
+
+export PS1='$PWD # '
+
+set -o emacs
+
+alias ll="ls -la"
+alias emacs="emacs -nw"
+alias S="tmux new"
+alias r="tmux attach -d"
+alias x="tmux attach"
+
+export EDITOR=$(which emacs)
+typeset -r EDITOR
+
+export VISUAL="$EDITOR"
+typeset -r VISUAL
