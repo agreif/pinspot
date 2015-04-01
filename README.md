@@ -4,23 +4,29 @@
 
 ### What I wanted to avoid
 
-I always wanted a simple configuration management too for my unix/linux boxes that ...
+I always wanted a simple configuration management tool for my unix/linux boxes that ...
 
 * needs no dependencies like ruby, python
 
 * needs no bloated DSL or XML configuration files
 
-* needs no open ports for master/agent stuff
+* needs no open ports for master/agent communication
 
-### What I only need
+### What I only needed
 
-Back to the roots, all I want to use to configure my systems is:
+Back to the roots ... all I want is:
 
 * SSH
 
 * shell scripts
 
 * push-based configuration
+
+* sudo-able on the remote side
+
+### Why the funny name?
+
+Why not? Sounds funny and caught me at the first thaught :)
 
 ### Folder structure
 
@@ -66,7 +72,8 @@ pinspot
         └── scripts
 ```
 
-`/pinspot.sh` - the main script that runs the configuration of the servers
+* `/pinspot.sh`
+the main script that runs the configuration of the servers
 
 `/base/` - contains all global stuff that is needed to configure the servers
 
