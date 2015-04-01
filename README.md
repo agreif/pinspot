@@ -1,8 +1,14 @@
 # pinspot
 
-**Work in Progress ... the primary aim is to configure my OpenBSD boxes**
+**Work in Progress ... mainly for my private needs**
 
-### I wanted to ...
+This project is mainly the `pinspot.sh` script that supports remote script
+execution via SSH, sudo and shell scripts.
+I created it to setup and configure my OpenBSD boxes.
+The scripts fit my personal needs, and are only provided as samples for others.
+Feel free to write your own scripts and facts.
+
+### My goals ...
 
 * avoid dependencies like ruby, python, etc
 
