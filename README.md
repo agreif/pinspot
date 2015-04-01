@@ -236,7 +236,7 @@ Like `/base/scripts/` but specific to this server.
 
 After starting the pinspot script, it does the following steps for every given server:
 
-* as for sudo password if specified with option `-S`
+* ask for the sudo password if specified with option `-S`
 
 * create a main-exec-script for the remote server
 
