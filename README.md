@@ -4,13 +4,13 @@
 
 ### I wanted to ...
 
-* avoid dependencies like ruby, python
+* avoid dependencies like ruby, python, etc
 
 * avoid bloated DSL or XML configuration files
 
-* avoid open ports for master/agent communication
+* avoid opening ports for master/agent communication.
 
-### I needed ...
+### I like it simple ...
 
 * only SSH
 
@@ -22,33 +22,33 @@
 
 * sudo-able on the remote side
 
-* see the the actions and its execution order at a glance
+* see the the actions and its execution order at a glance in the filesystem
 
-* specify the servers that need to be configured with shell filename globbing
+* specify the servers with filename globbing in the shell.
 
 ### Command Line Usage
 
 ```Shell
-Synopsys:
-sh pinspot.sh [options] server-dirs
+Synopsis:
+  sh pinspot.sh [options] serverdir [... serverdir]
 
-options:
-    -u USER   - The ssh login name on the remote server.
-                If not given takes the current user.
-    -s        - Use sudo for config script executions.
-                If password is needed, then you may be asked many times on the fly.
-    -S        - Ask sudo password before configureing the hosts
-                and use use the given sudo password for all given servers.
-                SECURITY WARNING: password is visible with 'ps aux'
-    -m        - List of monitor scripts to execute. Comma-separated of more than one.
-                If given, configuration scripts are not run.
-    -M        - Run all monitor scripts.
-                If given, configuration scripts are not run.
+Options:
+  -u USER   - The ssh login name on the remote server.
+              If not given takes the current user.
+  -s        - Use sudo for config script executions.
+              If password is needed, then you may be asked many times on the fly.
+  -S        - Ask sudo password before configureing the hosts
+              and use use the given sudo password for all given servers.
+              SECURITY WARNING: password is visible with 'ps aux'
+  -m        - List of monitor scripts to execute. Comma-separated of more than one.
+              If given, configuration scripts are not run.
+  -M        - Run all monitor scripts.
+              If given, configuration scripts are not run.
 ```
 
 Some examples:
 
-On a completely fresh system with root login and public Key authorization (first pinspot run shold disable password authentication)
+On a completely fresh system with root login and public Key authorization (first pinspot run should disable password authentication!)
 
 ```Shell
 $ sh pinspot.sh -u root servers/example.com
