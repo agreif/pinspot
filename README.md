@@ -195,14 +195,14 @@ You can also use symlinks if multiple servers need the same configuration:
 ```Shell
 pinspot
 └── servers
-    ├── example.com/
+    ├── example.com
     │   ├── actions
     │   ├── files
     │   └── scripts
     ├── db.example.com -> example.com/
     ├── www.example.com -> example.com/
     │
-    ├── local_openbsd_vms/
+    ├── local_openbsd_vms
     │   ├── actions
     │   ├── files
     │   └── scripts
@@ -231,6 +231,30 @@ Like `/base/files/` but specific to this server.
 ##### `/servers/<hostname>/scripts/`
 
 Like `/base/scripts/` but specific to this server.
+
+### Behind the scenes
+
+After starting the pinspot script, it does the following steps for every given server:
+
+* as for sudo password if specified with option `-S`
+
+* create a main-exec-script for the remote server
+
+* tar the contents of the following directories `facts` `files` `scripts` `actions` and the main-exec-script.
+Files in the specific server directories will override files in the `base` directory if the filenames equal.
+
+* cleanup potential dot-directory on the remote server (`~/.pinspot`)
+
+* create new `~/.pinspot` directory on remote server
+
+* transfer tarball to the remote `~/.pinspot` directory
+
+* extract tarball
+
+* run main-exec-script on remote server. This executes all action scripts in correct order.
+Uses `sudo` if `-s` or `-S` option is provided.
+
+* cleanup dot-directory on the remote server (`~/.pinspot`)
 
 ### Why the funny name?
 
