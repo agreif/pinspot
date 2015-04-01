@@ -12,7 +12,6 @@ ALL_MONITORS=0
 MONITOR_CMDS=''
 NEEDS_SUDO=0
 NEEDS_SUDO_PW=0
-QUIET=0
 
 while getopts "u:m:MsSq" opt; do
     case $opt in
@@ -21,7 +20,6 @@ while getopts "u:m:MsSq" opt; do
 	M) ALL_MONITORS=1;;
 	s) NEEDS_SUDO=1;;
 	S) NEEDS_SUDO_PW=1;;
-	q) QUIET=1;;
     esac
 done
 shift $((OPTIND-1))

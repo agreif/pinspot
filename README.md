@@ -2,23 +2,19 @@
 
 **Work in Progress ... the primary aim is to configure my OpenBSD boxes**
 
-### What I wanted to avoid
+### I wanted to ...
 
-I always wanted a simple configuration management tool for my unix/linux boxes that ...
+* avoid dependencies like ruby, python
 
-* needs no dependencies like ruby, python
+* avoid bloated DSL or XML configuration files
 
-* needs no bloated DSL or XML configuration files
+* avoid open ports for master/agent communication
 
-* needs no open ports for master/agent communication
+### I needed ...
 
-### What I only needed
+* only SSH
 
-Back to the roots ... all I want is:
-
-* SSH
-
-* shell scripts
+* only shell scripts
 
 ### Benefits
 
@@ -28,44 +24,108 @@ Back to the roots ... all I want is:
 
 * see the the actions and its execution order at a glance
 
+* specify the servers that need to be configured with shell filename globbing
+
+### Command Line Usage
+
+```Shell
+Synopsys:
+sh pinspot.sh [options] server-dirs
+
+options:
+    -u USER   - The ssh login name on the remote server.
+                If not given takes the current user.
+    -s        - Use sudo for config script executions.
+                If password is needed, then you may be asked many times on the fly.
+    -S        - Ask sudo password before configureing the hosts
+                and use use the given sudo password for all given servers.
+                SECURITY WARNING: password is visible with 'ps aux'
+    -m        - List of monitor scripts to execute. Comma-separated of more than one.
+                If given, configuration scripts are not run.
+    -M        - Run all monitor scripts.
+                If given, configuration scripts are not run.
+```
+
+Some examples:
+
+On a completely fresh system with root login and public Key authorization (first pinspot run shold disable password authentication)
+
+```Shell
+$ sh pinspot.sh -u root servers/example.com
+```
+
+Configuration run with admin user who has NOPASSWD in sudoers:
+
+```Shell
+$ sh pinspot.sh -u joeadmin -s servers/example.com
+```
+
+Configuration run with admin user who has has to type in sudo password:
+
+```Shell
+$ sh pinspot.sh -u joeadmin -S servers/example.com
+Please enter your sudo password:
+```
+
+In the case the logged in user is the admin (the -u can be left off)
+and needs no sudo password
+
+```Shell
+$ sh pinspot.sh -s servers/example.com
+```
+
+Configure all servers with example.com domain:
+
+```Shell
+$ sh pinspot.sh -s servers/*.example.com
+```
+
+Configure all localhost servers:
+
+```Shell
+$ sh pinspot.sh -s servers/localhost*
+```
+
+
+
 ### Folder structure
 
 ```Shell
 pinspot
 ├── pinspot.sh
 ├── base
-│   ├── facts
-│   │   ├── osName
-│   │   └── osRelease
-│   ├── files
-│   │   ├── bar.txt
-│   │   └── foo.txt
-│   ├── monitors
-│   │   ├── load
-│   │   └── uptime
-│   └── scripts
-│       ├── addAuthorizedKey
-│       ├── addFileLines
-│       ├── createDir
-│       ├── createFile
-│       ├── createGroup
-│       ├── createUser
-│       ├── execScript
-│       ├── includeSudoersDir
-│       ├── installPackages
-│       ├── sshKeygen
-│       ├── sshdAllowX11Forwarding
-│       └── sshdDisableRootLogin
+│   ├── facts
+│   │   ├── osName
+│   │   └── osRelease
+│   ├── files
+│   │   ├── bar.txt
+│   │   └── foo.txt
+│   ├── monitors
+│   │   ├── load
+│   │   └── uptime
+│   └── scripts
+│       ├── addAuthorizedKey
+│       ├── addFileLines
+│       ├── createDir
+│       ├── createFile
+│       ├── createGroup
+│       ├── createUser
+│       ├── execScript
+│       ├── includeSudoersDir
+│       ├── installPackages
+│       ├── sshKeygen
+│       ├── sshdAllowX11Forwarding
+│       └── sshdDisableRootLogin
 └── servers
     ├── example.com
-    │   ├── actions
-    │   │   ├── 010_addFileLines_root_profile
-    │   │   ├── 020_createFile_root_kshrc
-    │   │   ├── 030_createDir_tmp_foo
-    │   │   └── 100_sshdDisableRootLogin
-    │   ├── files
-    │   │   └── foo.txt
-    │   └── scripts
+    │   ├── actions
+    │   │   ├── 010_addFileLines_root_profile
+    │   │   ├── 020_createFile_root_kshrc
+    │   │   ├── 030_createDir_tmp_foo
+    │   │   └── 100_sshdDisableRootLogin
+    │   ├── files
+    │   │   └── foo.txt
+    │   └── scripts
     └── example.com:2222
         ├── actions
         ├── files
@@ -104,11 +164,12 @@ They get the server-specific action file as an argument, that contains the speci
 Execution happens with the following envirnment variables:
 
 ```Shell
-PINSPOT_ACTION_FILE=<path-to-action-file>
-PINSPOT_FILES_DIR=<path-to-files-dir>
-FACTX=valueX
-FACTY=valueY
-FACTZ=valueZ
+PINSPOT_ACTION_FILE=<path-to-action-file> \
+PINSPOT_FILES_DIR=<path-to-files-dir> \
+FACTX=valueX \
+FACTY=valueY \
+FACTZ=valueZ \
+theScriptToExecute
 ```
 
 ##### `/servers/`
