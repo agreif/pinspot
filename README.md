@@ -72,7 +72,8 @@ pinspot
         └── scripts
 ```
 
-* `/pinspot.sh`
+### `/pinspot.sh`
+
 the main script that runs the configuration of the servers
 
 `/base/` - contains all global stuff that is needed to configure the servers
