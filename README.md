@@ -20,13 +20,13 @@ Back to the roots ... all I want is:
 
 * shell scripts
 
+### Benefits
+
 * push-based configuration
 
 * sudo-able on the remote side
 
-### Why the funny name?
-
-Why not? Sounds funny and caught me at the first thaught :)
+* see the the actions and its execution order at a glance
 
 ### Folder structure
 
@@ -82,12 +82,11 @@ Contains all *global* stuff that is needed to configure the servers.
 
 ##### `/base/facts/`
 
-Small scripts that collect information from the remote server that can be used in the scripts.
-All facts must write only one line to the stdout in the form
+Small scripts that collect information from the remote server that can be used in the configuration scripts.
+In order to do this all, fact scripts must
+output only one line to the stdout so that the shell can export as environment variables.
 
-`SOMEVAR=somevalue`
-
-so that the shell can export these as environment variables.
+`SOMEFACT=somevalue`
 
 ##### `/base/files/`
 
@@ -100,16 +99,18 @@ Small scripts that check something on the remote server side. This is still an e
 ##### `/base/scripts/`
 
 Small *idempotent* scripts that do the real job on the remote side.
+Idempotent means, that they must not generate negative effects if called many times.
 They get the server-specific action file as an argument, that contains the specific params.
 Execution happens with the following envirnment variables:
 
 ```Shell
 PINSPOT_ACTION_FILE=<path-to-action-file>
 PINSPOT_FILES_DIR=<path-to-files-dir>
-FACT_X=<value-x>
-FACT_Y=<value-y>
-FACT_Z=<value-z>
+FACTX=valueX
+FACTY=valueY
+FACTZ=valueZ
 ```
+
 ##### `/servers/`
 
 Server-specific configurations.
@@ -123,9 +124,31 @@ Configuration files for a specific server.
 
 * IP address
 
+* or comethings that the `ssh` tool accepts as the remote server
+
 and can have the ssh port as a suffix after the colon.
 So if you have a local VM guest that you access with
-`ssh -p 2222 localhost` then the foldername would be `/localhost:2222`
+`ssh -p 2222 localhost` then the foldername would be `/localhost:2222`.
+You can also use symlinks if multiple servers need the same configuration:
+
+```Shell
+pinspot
+└── servers
+    ├── example.com/
+    │   ├── actions
+    │   ├── files
+    │   └── scripts
+    ├── db.example.com -> example.com/
+    ├── www.example.com -> example.com/
+    │
+    ├── local_openbsd_vms/
+    │   ├── actions
+    │   ├── files
+    │   └── scripts
+    ├── localhost:2222 -> local_openbsd_vms/
+    ├── localhost:2223 -> local_openbsd_vms/
+    ├── localhost:2224 -> local_openbsd_vms/
+```
 
 ##### `/servers/<hostname>/actions/`
 
@@ -136,7 +159,7 @@ Action file names must have the following convention:
 
 * the `sortIndex` (required) is used to determine the order of the actions
 
-* the `scriptName` (required) is used to find the script in `/base/scripts/`.
+* the `scriptName` (required) corresponds with the script file name in  `/base/scripts/`. They *must* match.
 
 * the `comment` (optional) is only informational. If not needed then that "_" is also optional.
 
@@ -148,5 +171,7 @@ Like `/base/files/` but specific to this server.
 
 Like `/base/scripts/` but specific to this server.
 
+### Why the funny name?
 
+Why not? Sounds funny and caught me at the first thaught :)
 
