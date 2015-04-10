@@ -263,7 +263,7 @@ Uses `sudo` if `-s` or `-S` option is provided.
 
 * cleanup dot-directory on the remote server (`~/.pinspot`)
 
-### Why the funny name 'pinspot'?
+### Why the name 'pinspot'?
 
-Why not? Sounds funny and caught me at the first thaught :)
+Why not? Sounds funny and caught me at the first thought :)
 
