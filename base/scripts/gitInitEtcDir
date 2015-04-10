@@ -1,0 +1,24 @@
+#!/bin/sh
+
+echo "$0"
+
+echo "check..."
+if test -d /etc/.git; then
+    echo "already done"
+    exit 0
+fi
+
+cd /etc
+
+echo "exec..."
+git init
+if test $? -ne 0; then exit 1; fi
+
+git add *
+if test $? -ne 0; then exit 1; fi
+
+git commit -am initial
+if test $? -ne 0; then exit 1; fi
+
+echo "result..."
+git status

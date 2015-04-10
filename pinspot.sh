@@ -95,6 +95,7 @@ if test -z "$MONITOR_CMDS"; then
         echo "\$action_file"
         PINSPOT_ACTION_FILE=\`pwd\`/$ACTIONS_DIR/\$action_file \
             PINSPOT_FILES_DIR=\`pwd\`/$FILES_DIR \
+            PINSPOT_REMOTE_USER=/$REMOTE_USER \
             \`pwd\`/$SCRIPTS_DIR/\$script
         result=\$?
         if test \$result -ne 0; then echo "ERROR exitcode: \$result"; exit 1; fi

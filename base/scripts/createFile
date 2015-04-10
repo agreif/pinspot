@@ -45,7 +45,7 @@ if test ! -d $DIR; then
 fi
 
 if test $HAS_CONTENT -eq 1; then
-    sed '1,/^content: *$/d' $PINSPOT_ACTION_FILE > "$DEST_FILE"
+    sed -e '1,/^content: *$/d' -e '/./,$!d' $PINSPOT_ACTION_FILE > "$DEST_FILE"
     if test $? -ne 0; then
 	echo "error"
 	exit 1

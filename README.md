@@ -172,6 +172,7 @@ Execution happens with the following envirnment variables:
 ```Shell
 PINSPOT_ACTION_FILE=<path-to-action-file> \
 PINSPOT_FILES_DIR=<path-to-files-dir> \
+PINSPOT_REMOTE_USER=<remote-user> \
 FACTX=valueX \
 FACTY=valueY \
 FACTZ=valueZ \
