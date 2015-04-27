@@ -24,7 +24,7 @@ CLASS=`grep '^class:' $PINSPOT_ACTION_FILE | sed 's/^[^:]*:\(.*\)/\1/' | sed 's/
 
 if test "$PINSPOT_OS_NAME" = "OpenBSD"; then
     echo "check..."
-    getent passwd $NAME
+    userinfo -e $NAME
     if test $? -eq 0; then
 	echo "already done"
 	exit 0

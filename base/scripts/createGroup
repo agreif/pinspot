@@ -14,7 +14,7 @@ GID=`grep '^gid:' $PINSPOT_ACTION_FILE | sed 's/^[^:]*:\(.*\)/\1/' | sed 's/^ //
 
 if test "$PINSPOT_OS_NAME" = "OpenBSD"; then
     echo "check..."
-    getent group $NAME
+    groupinfo -e $NAME
     if test $? -eq 0; then
 	echo "already done"
 	exit 0
