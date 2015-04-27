@@ -75,7 +75,29 @@ for host_path in $HOST_PATHS; do
 
     echo "create action script..."
     cat > $TMP_SH <<EOF
-echo "fix file flags......"
+echo "flatten actions..."
+cd actions
+find . -name '.DS_Store' -exec rm {} \\;
+find . -name '._*' -exec rm {} \\;
+for path in \`find . -type f\`; do
+    path=\`echo \$path | sed 's|^\./||'\`
+    echo \$path | grep -q '/'
+    if test \$? -eq 0; then
+        dir_name=\`dirname \$path | sed 's#/#-#g' | sed 's#_#-#g'\`
+        file_name=\`basename \$path\`
+        new_file_name="\$dir_name-\$file_name"
+        mv \$path \$new_file_name
+    fi
+done
+# remove remaining empty dirs
+for d in *; do
+    if test -d \$d; then
+        rm -rf \$d
+    fi
+done
+cd ..
+
+echo "fix file flags..."
 chmod u=rx,go-rwx $SCRIPTS_DIR/* $MONITORS_DIR/* $FACTS_DIR/*
 echo "export facts..."
 for fact in \`ls $FACTS_DIR\`; do

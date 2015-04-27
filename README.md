@@ -92,8 +92,6 @@ Configure all localhost servers:
 $ sh pinspot.sh -s servers/localhost*
 ```
 
-
-
 ### Folder structure
 
 ```Shell
@@ -128,7 +126,10 @@ pinspot
     │   │   ├── 010_addFileLines_root_profile
     │   │   ├── 020_createFile_root_kshrc
     │   │   ├── 030_createDir_tmp_foo
-    │   │   └── 100_sshdDisableRootLogin
+    │   │   ├── 100_sshdDisableRootLogin
+    │   │   └── 110_owncloud
+    │   │       ├── 10_installPackages_owncloud
+    │   │       └── 20_execScript_setup_httpd
     │   ├── files
     │   │   └── foo.txt
     │   └── scripts
@@ -221,6 +222,7 @@ pinspot
 ##### `/servers/<hostname>/actions/`
 
 Contains the actions to be taken on the specific server.
+Actions can be structured hierachically (see owncloud sample above).
 Action file names must have the following convention:
 
 `<sortIndex>_<scriptName>_<comment>`
