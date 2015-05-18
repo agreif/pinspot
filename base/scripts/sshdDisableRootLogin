@@ -13,7 +13,7 @@ if test $? -eq 0; then
 fi
 
 echo "exec..."
-sed -e 's/^#\(PermitRootLogin\).*$/\1 no/' $FILE > $TMP_FILE
+sed -E -e 's/^#? *(PermitRootLogin).*$/\1 no/' $FILE > $TMP_FILE
 cat $TMP_FILE > $FILE
 rm $TMP_FILE
 

@@ -1,0 +1,51 @@
+#!/bin/sh
+
+# name: ...
+# user: ...
+# job: ...
+
+echo "$0"
+
+NAME="`grep '^name:' $PINSPOT_ACTION_FILE | sed 's/^[^:]*:\(.*\)/\1/' | sed 's/^ //'`"
+if test -z "$NAME"; then
+    echo "error: name missing"
+    exit 1
+fi
+
+USER=`grep '^user:' $PINSPOT_ACTION_FILE | sed 's/^[^:]*:\(.*\)/\1/' | sed 's/^ //'`
+if test -z "$USER"; then
+    echo "error: user missing"
+    exit 1
+fi
+
+JOB="`grep '^job:' $PINSPOT_ACTION_FILE | sed 's/^[^:]*:\(.*\)/\1/' | sed 's/^ //'`"
+if test -z "$JOB"; then
+    echo "error: job missing"
+    exit 1
+fi
+
+echo "exec..."
+
+crontab_file=/tmp/pinspot_crontab
+crontab_file_tmp=$crontab_file.tmp
+
+crontab -l -u $USER > $crontab_file
+
+sed -e "/^# $NAME start/,/^# $NAME end/d" \
+    $crontab_file > $crontab_file_tmp
+
+mv $crontab_file_tmp $crontab_file
+
+cat >> $crontab_file <<EOF
+# $NAME start
+$JOB
+# $NAME end
+EOF
+
+crontab -u $USER $crontab_file
+if test $? -ne 0; then echo "error"; exit 1; fi
+
+echo "result..."
+crontab -l -u $USER | sed -n "/$NAME start/,/$NAME end/p" $crontab_file
+
+rm $crontab_file

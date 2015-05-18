@@ -20,5 +20,15 @@ if test $? -ne 0; then exit 1; fi
 git commit -am initial
 if test $? -ne 0; then exit 1; fi
 
+cat > .gitignore <<EOF
+/random.seed
+EOF
+
+git add .gitignore
+git rm --cached random.seed
+
+git commit -am 'added some ignores'
+if test $? -ne 0; then exit 1; fi
+
 echo "result..."
 git status
