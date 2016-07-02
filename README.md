@@ -213,7 +213,7 @@ pinspot
     │   └── scripts
     ├── localhost:2222_my_vm1 -> local_openbsd_vms/
     ├── localhost:2223_other_vm -> local_openbsd_vms/
-    ├── localhost:2224_special_vm -> local_openbsd_vms/
+    ├── localhost:2224 -> local_openbsd_vms/
 ```
 
 ##### `/servers/<hostname>/actions/`
