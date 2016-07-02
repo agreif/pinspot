@@ -3,21 +3,16 @@
 BASE_DIR=base
 ACTIONS_DIR=actions
 FILES_DIR=files
-MONITORS_DIR=monitors
 SCRIPTS_DIR=scripts
 FACTS_DIR=facts
 REMOTE_DIR=.pinspot
 REMOTE_USER=$LOGNAME
-ALL_MONITORS=0
-MONITOR_CMDS=''
 NEEDS_SUDO=0
 NEEDS_SUDO_PW=0
 
 while getopts "u:m:MsSq" opt; do
     case $opt in
 	u) REMOTE_USER="$OPTARG";;
-        m) MONITOR_CMDS="$OPTARG";;
-	M) ALL_MONITORS=1;;
 	s) NEEDS_SUDO=1;;
 	S) NEEDS_SUDO_PW=1;;
     esac
@@ -30,12 +25,6 @@ if test -z "$HOST_PATHS"; then
     echo "host_paths missing"
     exit 1
 fi
-
-if test $ALL_MONITORS -eq 1; then
-    MONITOR_CMDS=`ls $BASE_DIR/$MONITORS_DIR`
-fi
-
-MONITOR_CMDS=`echo "$MONITOR_CMDS" | sed 's/,/ /g'`
 
 PASSWORD=''
 if test $NEEDS_SUDO_PW -eq 1; then
@@ -51,15 +40,15 @@ elif test $NEEDS_SUDO -eq 1; then
 fi
 
 echo "HOST_PATHS: $HOST_PATHS"
-echo "MONITOR_CMDS: $MONITOR_CMDS"
 
 TMP_TAR=tmp.tar
 TMP_SH=tmp.sh
 
 for host_path in $HOST_PATHS; do
     host_dir=`echo $host_path | sed 's|/$||' | awk -F/ '{print $NF}'`
-    host=`echo $host_dir | awk -F/ '{print $NF}' | awk -F: '{print $1}'`
-    port=`echo $host_dir | awk -F/ '{print $NF}' | awk -F: '{print $2}'`
+    host_port=`echo $host_dir | sed 's/\([^_]*\)_.*$/\1/'`
+    host=`echo $host_port | awk -F/ '{print $NF}' | awk -F: '{print $1}'`
+    port=`echo $host_port | awk -F/ '{print $NF}' | awk -F: '{print $2}'`
     echo "host: $host   port: $port"
     if test -z "$port"; then
 	port=22
@@ -98,7 +87,7 @@ done
 cd ..
 
 echo "fix file flags..."
-chmod u=rx,go-rwx $SCRIPTS_DIR/* $MONITORS_DIR/* $FACTS_DIR/*
+chmod u=rx,go-rwx $SCRIPTS_DIR/* $FACTS_DIR/*
 echo "export facts..."
 for fact in \`ls $FACTS_DIR\`; do
     echo "  \$fact"
@@ -109,33 +98,30 @@ for fact in \`ls $FACTS_DIR\`; do
     export \$var
 done
 
-if test -z "$MONITOR_CMDS"; then
-    echo "exec actions..."
-    for action_file in \`ls $ACTIONS_DIR\`; do
-        script=\`echo \$action_file | cut -d _ -f 2\`
-        echo
-        echo "\$action_file"
-        PINSPOT_ACTION_FILE=\`pwd\`/$ACTIONS_DIR/\$action_file \
-            PINSPOT_FILES_DIR=\`pwd\`/$FILES_DIR \
-            PINSPOT_REMOTE_USER=/$REMOTE_USER \
-            \`pwd\`/$SCRIPTS_DIR/\$script
-        result=\$?
-        if test \$result -ne 0; then echo "ERROR exitcode: \$result"; exit 1; fi
-    done
-else
-    echo "run monitors..."
-    for monitor_cmd in $MONITOR_CMDS; do
-        echo
-        echo "\$monitor_cmd"
-        \`pwd\`/$MONITORS_DIR/\$monitor_cmd
-        result=\$?
-        if test \$result -ne 0; then echo "ERROR exitcode: \$result"; exit 1; fi
-    done
-fi
+echo "exec actions..."
+for action_file in \`ls $ACTIONS_DIR\`; do
+    script=\`echo \$action_file | cut -d _ -f 2\`
+    echo
+    echo "\$action_file"
+    PINSPOT_ACTION_FILE=\`pwd\`/$ACTIONS_DIR/\$action_file \
+        PINSPOT_FILES_DIR=\`pwd\`/$FILES_DIR \
+        PINSPOT_REMOTE_USER=$REMOTE_USER \
+        \`pwd\`/$SCRIPTS_DIR/\$script
+    result=\$?
+    if test \$result -ne 0; then echo "ERROR exitcode: \$result"; exit 1; fi
+done
 EOF
 
-    echo "pack..."
-    tar -cf $TMP_TAR -C . $TMP_SH -C base . -C ../$host_path .
+    echo "pack tmp script ..."
+    tar -cf $TMP_TAR $TMP_SH
+    if test $? -ne 0; then exit 1; fi
+
+    echo "pack base ..."
+    tar -rf $TMP_TAR --exclude actions -C base .
+    if test $? -ne 0; then exit 1; fi
+
+    echo "pack server ..."
+    tar -rLf $TMP_TAR -C $host_path .
     if test $? -ne 0; then exit 1; fi
 
     echo "transfer..."
