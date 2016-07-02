@@ -46,10 +46,6 @@ Options:
   -S        - Ask sudo password before configureing the hosts
               and use use the given sudo password for all given servers.
               SECURITY WARNING: password is visible with 'ps aux'
-  -m        - List of monitor scripts to execute. Comma-separated of more than one.
-              If given, configuration scripts are not run.
-  -M        - Run all monitor scripts.
-              If given, configuration scripts are not run.
 ```
 
 Some examples:
@@ -193,11 +189,12 @@ Configuration files for a specific server.
 
 * IP address
 
-* or comethings that the `ssh` tool accepts as the remote server
+* or something that the `ssh` tool accepts as the remote server
 
 and can have the ssh port as a suffix after the colon.
+An optional comment can be added as a last part after an underscore.
 So if you have a local VM guest that you access with
-`ssh -p 2222 localhost` then the foldername would be `/localhost:2222`.
+`ssh -p 2222 localhost` then the foldername could be `/localhost:2222_somecomment`.
 You can also use symlinks if multiple servers need the same configuration:
 
 ```Shell
@@ -214,9 +211,9 @@ pinspot
     │   ├── actions
     │   ├── files
     │   └── scripts
-    ├── localhost:2222 -> local_openbsd_vms/
-    ├── localhost:2223 -> local_openbsd_vms/
-    ├── localhost:2224 -> local_openbsd_vms/
+    ├── localhost:2222_my_vm1 -> local_openbsd_vms/
+    ├── localhost:2223_other_vm -> local_openbsd_vms/
+    ├── localhost:2224_special_vm -> local_openbsd_vms/
 ```
 
 ##### `/servers/<hostname>/actions/`
