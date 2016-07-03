@@ -100,9 +100,6 @@ pinspot
 │   ├── files
 │   │   ├── bar.txt
 │   │   └── foo.txt
-│   ├── monitors
-│   │   ├── load
-│   │   └── uptime
 │   └── scripts
 │       ├── addAuthorizedKey
 │       ├── addFileLines
@@ -154,10 +151,6 @@ output only one line to the stdout so that the shell can export as environment v
 ##### `/base/files/`
 
 Files or folders that can be used on all servers.
-
-##### `/base/monitors/`
-
-Small scripts that check something on the remote server side. This is still an experimental feature.
 
 ##### `/base/scripts/`
 
